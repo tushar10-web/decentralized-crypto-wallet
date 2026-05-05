@@ -18,10 +18,30 @@ public class AuthController {
     private RepositoryUser userRepository;
     private static final java.util.Map<String,String> challengeStore=new java.util.HashMap<>();
     @GetMapping("/auth/challenge")
+
     public String getChallenge(@RequestParam String address){
         String challenge = ChallengeGenerator.generateChallenge();
         challengeStore.put(address, challenge);
         return challenge;
+    }
+    @GetMapping("/auth/sign")
+    public String sign(
+            @RequestParam String address,
+            @RequestParam String message
+    ) {
+
+        User user = userRepository
+                .findByAddress(address)
+                .orElse(null);
+
+        if(user == null){
+            return "USER NOT FOUND";
+        }
+
+        return SignatureUtil.signMessage(
+                message,
+                user.getPrivateKey()
+        );
     }
     @PostMapping("/auth/verify")
     public String verify(@RequestBody VerifyRequest request){
@@ -46,7 +66,7 @@ public class AuthController {
 
             String token = jwtService.generateToken(request.getAddress());
 
-            return token;
+            return "VALID";
         }else{
             return "INVALID";
         }

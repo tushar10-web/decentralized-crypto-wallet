@@ -24,7 +24,7 @@ public class WalletGenerator {
         String publicKey=keyPair.getPublicKey().toString(16);
         String address=credentials.getAddress();
         String privateKey=keyPair.getPrivateKey().toString(16);
-        return new WalletResponse(publicKey,address);
+        return new WalletResponse(publicKey,address,privateKey);
 
     }
 }
